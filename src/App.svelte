@@ -3,14 +3,9 @@ import Map from './lib/map/Map.svelte';
 import Aside from './lib/aside/Aside.svelte';
 
 let collapsedAside = true;
-let asideElement: HTMLElement;
 
 function toggleAsideButtonClick(event) {
   collapsedAside = !collapsedAside;
-}
-
-function handleAsideTransitionEnd() {
-  // asideElement.style.top = '';
 }
 
 </script>
@@ -35,25 +30,7 @@ function handleAsideTransitionEnd() {
   .main-wrapper {
     width: 100vw;
     height: 100vh;
-    /*display: grid;*/
-    /*grid-template-columns: 1fr;*/
-    /*grid-template-rows: min-content;*/
   }
-
-  /*.area-info {*/
-  /*  position: fixed;*/
-  /*  z-index: 450;*/
-  /*  background-color: #ffffffdd;*/
-  /*  top: 0;*/
-  /*  left: 0;*/
-  /*  right: 0;*/
-  /*  !*height: 100px;*!*/
-  /*  transition: top 1000ms ease;*/
-  /*}*/
-
-  /*.area-info.collapsed {*/
-  /*  display: none;*/
-  /*}*/
 
   .area-map {
     box-shadow: -8px 0 16px #c7c7c7cc;

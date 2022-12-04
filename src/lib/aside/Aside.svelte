@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { measureElementDimension, measureHiddenElementDimension, waitForNextAnimationFrame } from '../utils/dom';
+
   export let collapsed = false;
 
   const transitionProps = 'top 500ms ease';
@@ -16,70 +18,60 @@
     }
 
     const {style} = collapsedElement;
+    // Keep element style
+    const initialStyle = {
+      transition: style.getPropertyValue('transition'),
+      top: style.getPropertyValue('top'),
+    };
+    const listeners = {
+      transitionend: handleTransitionEndOrCancel,
+      transitioncancel: handleTransitionEndOrCancel,
+    }
+
+    // mark that transition starts
+    transitionIn = true;
 
     if (!collapsed) {
-      // transition in
-      transitionIn = true;
-      const contentHeight = await measureHiddenElementHeight(collapsedElement);
+      // measure
+      const contentHeight = await measureHiddenElementDimension(collapsedElement, 'height');
       style.setProperty('top', `-${contentHeight}px`);
+      Object.entries(listeners).forEach(([ev, listener]) => {
+        collapsedElement.addEventListener(ev, listener);
+      });
       await waitForNextAnimationFrame(2);
+      // and begin animation
       style.setProperty('transition', transitionProps);
       style.setProperty('top', '0');
     } else {
       // transition out
-      const contentHeight = measureElementHeight(collapsedElement);
+      Object.entries(listeners).forEach(([ev, listener]) => {
+        collapsedElement.addEventListener(ev, listener);
+      });
+      const contentHeight = measureElementDimension(collapsedElement, 'height');
       style.setProperty('transition', transitionProps);
       style.setProperty('top', `-${contentHeight}px`);
     }
-  }
 
-  function handleTransitionEnd(event: TransitionEvent) {
-    if (event.propertyName === 'top') {
-      resetAfterTransition();
-    }
-  }
-
-  function handleTransitionCancel(event: TransitionEvent) {
-    if (event.propertyName === 'top') {
-      resetAfterTransition();
-    }
-  }
-
-  function resetAfterTransition() {
-    const {style} = collapsedElement;
-    style.removeProperty('top');
-    style.removeProperty('transition');
-    transitionIn = false;
-    _collapsedIntern = collapsed;
-  }
-
-  function measureElementHeight(elem: HTMLElement) {
-    if (elem) {
-      return elem.getBoundingClientRect().height;
-    } else {
-      return 0;
-    }
-  }
-
-  async function measureHiddenElementHeight(elem: HTMLElement) {
-
-    if (elem) {
-      const {style} = elem;
-      style.setProperty('position', 'absolute');
-      style.setProperty('visibility', 'hidden');
-      await waitForNextAnimationFrame(2);
-      let result = measureElementHeight(elem);
-      style.removeProperty('position');
-      style.removeProperty('visibility');
-      return result;
-    } else {
-      return 0;
-    }
-  }
-
-  async function waitForNextAnimationFrame(count = 1) {
-    for (let i = 0; i < count; i++) {
-      await new Promise((resolve) => window.requestAnimationFrame(resolve));
+    function handleTransitionEndOrCancel(this: HTMLElement, event: TransitionEvent) {
+      const {style} = collapsedElement;
+      console.log('transition event hook: ', event);
+      // remove listeners
+      Object.entries(listeners).forEach(([ev, listener]) => {
+        collapsedElement.removeEventListener(ev, listener);
+      });
+      event.target.removeEventListener('transitionend', handleTransitionEndOrCancel);
+      event.target.removeEventListener('transitioncancel', handleTransitionEndOrCancel);
+      // restore style only if transition in process.
+      // Else when transition cancels we will restore incorrect style
+      if(transitionIn) {
+        Object.entries(initialStyle).forEach(([key, value]) => {
+          style.setProperty(key, value);
+        });
+      }
+      // remove transition mark
+      transitionIn = false;
+      // and set collapsed (or not) class
+      _collapsedIntern = collapsed;
     }
   }
 
@@ -90,8 +82,6 @@
         class:collapsed={_collapsedIntern}
         class:transition-in={transitionIn}
         bind:this={collapsedElement}
-        on:transitionend={handleTransitionEnd}
-        on:transitioncancel={handleTransitionCancel}
 >
   <slot></slot>
 </div>

@@ -1,11 +1,11 @@
 <script lang="ts">
   import Map from './lib/map/Map.svelte';
   import Aside from './lib/aside/Aside.svelte';
-
-  let collapsedAside = true;
+  import { toggleAsideCollapsed } from './lib/store/app.store';
+  import { asideCollapsed, mapBounds } from './lib/store/app.store.js';
 
   function toggleAsideButtonClick(event) {
-    collapsedAside = !collapsedAside;
+    toggleAsideCollapsed();
   }
 
 </script>
@@ -17,7 +17,7 @@
         menu
       </span>
     </button>
-    <Aside collapsed={collapsedAside}>
+    <Aside collapsed={$asideCollapsed}>
       <div class="aside-content">
         <div class="section-search">SEARCH</div>
         <div class="section-favorites">FAVOURITES</div>

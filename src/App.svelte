@@ -2,7 +2,8 @@
   import Map from './lib/map/Map.svelte';
   import Aside from './lib/aside/Aside.svelte';
   import { toggleAsideCollapsed } from './lib/store/app.store';
-  import { asideCollapsed, mapBounds } from './lib/store/app.store.js';
+  import { asideCollapsed, geoSearchAutocompleteItems, geoSearchQuery } from './lib/store/app.store.js';
+  import Button from './lib/button/Button.svelte';
 
   function toggleAsideButtonClick(event) {
     toggleAsideCollapsed();
@@ -12,15 +13,23 @@
 
 <main>
   <div class="main-wrapper">
-    <button class="toggle-aside-button" on:click={toggleAsideButtonClick}>
-      <span class="material-symbols-rounded">
-        menu
-      </span>
-    </button>
+    <div class="toggle-aside-button">
+      <Button on:click={toggleAsideButtonClick}>
+        <span class="material-symbols-rounded">
+          menu
+        </span>
+      </Button>
+    </div>
     <Aside collapsed={$asideCollapsed}>
       <div class="aside-content">
-        <div class="section-search">SEARCH</div>
-        <div class="section-favorites">FAVOURITES</div>
+        <div class="section-search">
+          <input type="text" bind:value={$geoSearchQuery}/>
+        </div>
+        <div class="section-favorites">
+          {#each $geoSearchAutocompleteItems || [] as autocompleteItem}
+            <div>{autocompleteItem.title}</div>
+          {/each}
+        </div>
         <img style="height:200px;"
              src="https://upload.wikimedia.org/wikipedia/ru/2/23/%D0%9F%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0_%C2%AB%D0%9F%D0%BE%D0%B8%D1%81%D0%BA%C2%BB.jpg"/>
       </div>
@@ -47,30 +56,7 @@
     top: 1rem;
     left: 1rem;
     z-index: 500;
-    border: gray 1px solid;
-    border-radius: 4px;
-    background-color: rgb(199 199 199 / 75%);
-    box-shadow: 0 4px 8px 1px rgb(0 0 0 / 50%);
-    padding: 2px;
-    display: flex;
-    cursor: pointer;
-    transition: transform 250ms ease, box-shadow 250ms ease;
     max-width: 30px;
-  }
-
-  .toggle-aside-button:active,
-  .toggle-aside-button:hover {
-    border-color: var(--color-accent);
-  }
-
-  .toggle-aside-button:active {
-    transform: translate(1px, 1px);
-    box-shadow: 0 2px 4px 1px rgb(0 0 0 / 50%);
-  }
-
-  .toggle-aside-button:focus {
-    outline: coral 1px dashed;
-    outline-offset: 4px;
   }
 
   .aside-content {

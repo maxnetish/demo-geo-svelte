@@ -4,6 +4,7 @@
   import { toggleAsideCollapsed } from './lib/store/app.store';
   import { asideCollapsed, geoSearchAutocompleteItems, geoSearchQuery } from './lib/store/app.store.js';
   import Button from './lib/button/Button.svelte';
+  import Autocomplete from './lib/autocomplete/Autocomplete.svelte';
 
   function toggleAsideButtonClick(event) {
     toggleAsideCollapsed();
@@ -23,13 +24,18 @@
     <Aside collapsed={$asideCollapsed}>
       <div class="aside-content">
         <div class="section-search">
-          <input type="text" bind:value={$geoSearchQuery}/>
+          <Autocomplete
+            bind:value="{$geoSearchQuery}"
+            items="{$geoSearchAutocompleteItems || []}"
+            bindItemText="title"
+          />
+
         </div>
-        <div class="section-favorites">
-          {#each $geoSearchAutocompleteItems || [] as autocompleteItem}
-            <div>{autocompleteItem.title}</div>
-          {/each}
-        </div>
+<!--        <div class="section-favorites">-->
+<!--          {#each $geoSearchAutocompleteItems || [] as autocompleteItem}-->
+<!--            <div>{autocompleteItem.title}</div>-->
+<!--          {/each}-->
+<!--        </div>-->
         <img style="height:200px;"
              src="https://upload.wikimedia.org/wikipedia/ru/2/23/%D0%9F%D0%BE%D1%81%D1%82%D0%B5%D1%80_%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%D0%B0_%C2%AB%D0%9F%D0%BE%D0%B8%D1%81%D0%BA%C2%BB.jpg"/>
       </div>

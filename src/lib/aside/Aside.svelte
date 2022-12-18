@@ -54,7 +54,6 @@
 
     function handleTransitionEndOrCancel(this: HTMLElement, event: TransitionEvent) {
       const {style} = collapsedElement;
-      console.log('transition event hook: ', event);
       // remove listeners
       Object.entries(listeners).forEach(([ev, listener]) => {
         collapsedElement.removeEventListener(ev, listener);

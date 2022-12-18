@@ -16,7 +16,7 @@
 
   .app-button:active,
   .app-button:hover {
-    border-color: var(--color-accent);
+    border-color: var(--color-accent-bg);
   }
 
   .app-button:active {

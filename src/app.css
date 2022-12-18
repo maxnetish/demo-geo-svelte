@@ -15,7 +15,14 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
 
-    --color-accent: coral;
+    --color-accent-bg: coral;
+    --color-accent-text: white;
+    --color-dropdowm-bg: white;
+    --color-text: black;
+    --color-line: darkgray;
+
+    --border-dropdown: var(--color-line) 1px solid;
+    --border-dropdown-radius: 0.25rem;
 }
 
 * {

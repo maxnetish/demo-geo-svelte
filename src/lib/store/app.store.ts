@@ -44,4 +44,6 @@ export const geoSearchAutocompleteItems: Observable<HereAutocompleteResponse['it
   map((response) => {
     return response.items;
   }),
-)
+);
+
+export const chosenAutocompleteItem = new SvelteSubject<HereAutocompleteResponse['items'][number] | null>(null);

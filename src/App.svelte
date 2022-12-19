@@ -5,6 +5,8 @@
   import { asideCollapsed, geoSearchAutocompleteItems, geoSearchQuery } from './lib/store/app.store.js';
   import Button from './lib/button/Button.svelte';
   import Autocomplete from './lib/autocomplete/Autocomplete.svelte';
+  import { markByPositions } from './lib/utils/highlight.js';
+  import DOMPurify from 'dompurify';
 
   function toggleAsideButtonClick(event) {
     toggleAsideCollapsed();
@@ -13,7 +15,7 @@
   function geoSearchAutocompleteChooseItem(ev: CustomEvent) {
     const { item } = ev.detail;
     chosenAutocompleteItem.next(item);
-    geoSearchQuery.next(null);
+    geoSearchAutocompleteItems.next([]);
   }
 
 </script>
@@ -36,11 +38,17 @@
             bindItemText="title"
             bindItemKey="id"
             on:chooseItem={geoSearchAutocompleteChooseItem}
-          />
+          >
+            <svelte:fragment slot="itemTemplate" let:item={item}>
+              {@html DOMPurify.sanitize(markByPositions(item.title, item.highlights?.title))}
+            </svelte:fragment>
+          </Autocomplete>
         </div>
-        <div class="chosen-item">
-          {$chosenAutocompleteItem.title}
-        </div>
+        {#if $chosenAutocompleteItem}
+          <div class="chosen-item">
+            {$chosenAutocompleteItem.title}
+          </div>
+        {/if}
       </div>
     </Aside>
     <div class="area-map">
@@ -74,6 +82,7 @@
 
   .section-search {
     max-width: 50%;
+    padding: 1rem 0;
   }
 
   @media screen and (min-width: 800px) {

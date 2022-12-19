@@ -1,5 +1,5 @@
 import { SvelteSubject } from '../utils/rx';
-import { debounceTime, map, Observable, of, switchMap, take, withLatestFrom } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, Observable, of, switchMap, take, withLatestFrom } from 'rxjs';
 import type { LatLng, LatLngBounds } from 'leaflet';
 import { fromFetch } from 'rxjs/internal/observable/dom/fetch';
 import type { HereAutocompleteResponse } from '../here-api/here-autocomplete-response';
@@ -18,13 +18,17 @@ export const mapBounds = new SvelteSubject<{center: LatLng, zoom: number, bounds
 
 export const geoSearchQuery = new SvelteSubject<string | null>(null);
 
-export const geoSearchAutocompleteItems: Observable<HereAutocompleteResponse['items']> = geoSearchQuery.pipe(
-  debounceTime(1000),
+export const geoSearchAutocompleteItems = new SvelteSubject<HereAutocompleteResponse['items']>([]);
+
+// wire up changes of autocomplete search field
+geoSearchQuery.pipe(
+  debounceTime(500),
+  distinctUntilChanged(),
   withLatestFrom(mapBounds),
   switchMap(([query, mapBounds]) => {
     if(query && query.length) {
       return fromFetch<HereAutocompleteResponse>(
-        `/autocomplete.search.hereapi.com/v1/autocomplete?q=${query}&limit=10&at=${mapBounds.center.lat},${mapBounds.center.lng}`,
+        `/autocomplete.search.hereapi.com/v1/autocomplete?q=${encodeURI(query)}&limit=16&at=${mapBounds.center.lat},${mapBounds.center.lng}`,
         {
           method: 'GET',
           selector: (response) => {
@@ -44,6 +48,8 @@ export const geoSearchAutocompleteItems: Observable<HereAutocompleteResponse['it
   map((response) => {
     return response.items;
   }),
-);
+).subscribe((autocompleteItems) => {
+  geoSearchAutocompleteItems.next(autocompleteItems);
+});
 
 export const chosenAutocompleteItem = new SvelteSubject<HereAutocompleteResponse['items'][number] | null>(null);

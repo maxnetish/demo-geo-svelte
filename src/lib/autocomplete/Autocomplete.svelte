@@ -108,7 +108,7 @@
         0
       )
       `,
-        width: `${inputBox.width}px`,
+        width: `${inputBox.width + 1}px`,
       });
 
       function handleTransitionEnd() {
@@ -158,7 +158,9 @@
           on:click={() => clickItem(item, itemIndex)}
           on:keydown={(ev) => keydownItem(ev, item, itemIndex)}
         >
-          {dlv(item, bindItemText, item)}
+          <slot name="itemTemplate" {item}>
+            {dlv(item, bindItemText, item)}
+          </slot>
         </li>
       {/each}
     </ul>

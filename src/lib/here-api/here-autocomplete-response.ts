@@ -4,7 +4,7 @@
  */
 import type { HereResultType } from './here-result-type';
 import type { HereHouseNumberType } from './here-house-number-type';
-import type { HereLocalityTypes } from './here-locality-types';
+import type { HereLocalityType } from './here-locality-type';
 import type { HereAdministrativeAreaType } from './here-administrative-area-type';
 import type { HereAddress } from './here-address';
 import type { HereHighlightRange } from './here-highlight-range';
@@ -21,7 +21,7 @@ export interface HereAutocompleteResponse {
         politicalView?: string;
         resultType?: HereResultType;
         houseNumberType?: HereHouseNumberType;
-        localityType?: HereLocalityTypes;
+        localityType?: HereLocalityType;
         administrativeAreaType?: HereAdministrativeAreaType;
         address: HereAddress;
         distance?: number;

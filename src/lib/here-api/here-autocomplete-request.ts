@@ -2,7 +2,7 @@
  * HERE Geocoding & Search API  v7
  * See https://developer.here.com/documentation/geocoding-search-api/api-reference-swagger.html
  */
-import type { HereLocalityTypes } from './here-locality-types';
+import type { HereLocalityType } from './here-locality-type';
 
 export interface HereAutocompleteRequest {
     /**
@@ -35,7 +35,7 @@ export interface HereAutocompleteRequest {
      * * postalCode - restricting results to result type locality and locality type postalCode
      * * area - restricting results to result types: locality or administrativeArea including all the sub-types
      */
-    types?: HereLocalityTypes[];
+    types?: HereLocalityType[];
     /**
      * Select the preferred response language for result rendering from a list
      * of BCP47 compliant Language Codes. The autocomplete endpoint tries to detect

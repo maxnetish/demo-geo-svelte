@@ -1,8 +1,8 @@
 import { SvelteSubject } from '../utils/rx';
-import { debounceTime, distinctUntilChanged, map, Observable, of, switchMap, take, withLatestFrom } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, of, switchMap, take, withLatestFrom } from 'rxjs';
 import type { LatLng, LatLngBounds } from 'leaflet';
-import { fromFetch } from 'rxjs/internal/observable/dom/fetch';
 import type { HereAutocompleteResponse } from '../here-api/here-autocomplete-response';
+import { hereAutocomplete } from '../here-api/here-service';
 
 export const asideCollapsed = new SvelteSubject(true);
 
@@ -27,21 +27,11 @@ geoSearchQuery.pipe(
   withLatestFrom(mapBounds),
   switchMap(([query, mapBounds]) => {
     if(query && query.length) {
-      return fromFetch<HereAutocompleteResponse>(
-        `/autocomplete.search.hereapi.com/v1/autocomplete?q=${encodeURI(query)}&limit=16&at=${mapBounds.center.lat},${mapBounds.center.lng}`,
-        {
-          method: 'GET',
-          selector: (response) => {
-            if (response.ok) {
-              return response.json();
-            }
-            return of({
-                items: [],
-              } as HereAutocompleteResponse
-            );
-          },
-        }
-      );
+      return hereAutocomplete({
+        q: query,
+        limit: 16,
+        at: [mapBounds.center.lat, mapBounds.center.lng],
+      });
     }
     return of({items: []} as HereAutocompleteResponse);
   }),

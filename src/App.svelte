@@ -81,8 +81,7 @@
   }
 
   .section-search {
-    max-width: 50%;
-    padding: 1rem 0;
+    padding: 1rem 1rem 1rem 0;
   }
 
   @media screen and (min-width: 800px) {

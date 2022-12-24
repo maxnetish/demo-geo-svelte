@@ -1,4 +1,4 @@
-export enum HereLocalityTypes {
+export enum HereLocalityType {
     area = 'area',
     city = 'city',
     postalCode = 'postalCode',

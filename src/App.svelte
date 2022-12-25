@@ -2,11 +2,17 @@
   import Map from './lib/map/Map.svelte';
   import Aside from './lib/aside/Aside.svelte';
   import { chosenAutocompleteItem, toggleAsideCollapsed } from './lib/store/app.store';
-  import { asideCollapsed, geoSearchAutocompleteItems, geoSearchQuery } from './lib/store/app.store.js';
+  import {
+    asideCollapsed,
+    chosenItemDetails,
+    geoSearchAutocompleteItems,
+    geoSearchQuery,
+  } from './lib/store/app.store.js';
   import Button from './lib/button/Button.svelte';
   import Autocomplete from './lib/autocomplete/Autocomplete.svelte';
   import { markByPositions } from './lib/utils/highlight.js';
   import DOMPurify from 'dompurify';
+  import Details from './lib/details/Details.svelte';
 
   function toggleAsideButtonClick(event) {
     toggleAsideCollapsed();
@@ -44,9 +50,9 @@
             </svelte:fragment>
           </Autocomplete>
         </div>
-        {#if $chosenAutocompleteItem}
+        {#if $chosenItemDetails}
           <div class="chosen-item">
-            {$chosenAutocompleteItem.title}
+            <Details data={$chosenItemDetails}></Details>
           </div>
         {/if}
       </div>
@@ -81,7 +87,11 @@
   }
 
   .section-search {
-    padding: 1rem 1rem 1rem 0;
+    padding: 1rem 1rem 0.5rem 0;
+  }
+
+  .chosen-item {
+    padding: 0.5rem 1rem 1rem 0;
   }
 
   @media screen and (min-width: 800px) {

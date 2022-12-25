@@ -21,6 +21,7 @@
     --color-dropdowm-bg: white;
     --color-text: black;
     --color-line: darkgray;
+    --color-text-secondary: gray;
 
     --border-dropdown: var(--color-line) 1px solid;
     --border-dropdown-radius: 0.25rem;

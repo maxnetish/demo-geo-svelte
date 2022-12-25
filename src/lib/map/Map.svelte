@@ -2,8 +2,9 @@
   import type { LatLngExpression } from 'leaflet';
   import * as L from 'leaflet';
   import { onDestroy, onMount } from 'svelte';
-  import { debounceTime, fromEvent, map, merge, of, Subject, takeUntil } from 'rxjs';
-  import { mapBounds } from '../store/app.store';
+  import { debounceTime, filter, fromEvent, map, merge, of, Subject, takeUntil } from 'rxjs';
+  import { chosenItemDetails, mapBounds } from '../store/app.store';
+  import { LatLngBounds } from 'leaflet';
 
   const defaultCenter: LatLngExpression = [51.505, -0.09];
   const defaultZoom = 13;
@@ -63,6 +64,22 @@
       if (windowRef) {
         windowRef.localStorage.setItem('position', JSON.stringify(state));
       }
+    });
+
+    chosenItemDetails.pipe(
+      takeUntil(unsubscribe$),
+      filter(() => {
+        return !!mapInstance;
+      }),
+      filter((details) => {
+        return !!details;
+      }),
+    ).subscribe((details) => {
+      const leafletBounds = new LatLngBounds(
+        [details.mapView.south, details.mapView.west],
+        [details.mapView.north, details.mapView.east],
+      );
+      mapInstance.flyToBounds(leafletBounds);
     });
   });
 

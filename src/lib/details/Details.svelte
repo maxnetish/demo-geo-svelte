@@ -1,6 +1,7 @@
 <script lang="ts">
 
   import type { HereLookupResponse } from '../here-api/here-lookup-response';
+  import { HereResultTypeMap } from '../here-api/here-result-type.js';
 
   export let data: HereLookupResponse | null = null;
 
@@ -11,7 +12,7 @@
   <div class="details">
     <div class="details-attr">
       <div class="details-attr-name">
-        {data.resultType}:
+        {HereResultTypeMap[data.resultType].label}:
       </div>
       <div class="details-attr-value">
         {data.title}
@@ -49,7 +50,7 @@
   }
 
   .details-attr-name {
-    width: 96px;
+    width: 128px;
     flex-shrink: 0;
     text-align: end;
     font-size: small;

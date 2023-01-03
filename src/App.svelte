@@ -13,6 +13,7 @@
   import { markByPositions } from './lib/utils/highlight.js';
   import DOMPurify from 'dompurify';
   import Details from './lib/details/Details.svelte';
+  import { HereResultTypeMap } from './lib/here-api/here-result-type.js';
 
   function toggleAsideButtonClick(event) {
     toggleAsideCollapsed();
@@ -46,6 +47,7 @@
             on:chooseItem={geoSearchAutocompleteChooseItem}
           >
             <svelte:fragment slot="itemTemplate" let:item={item}>
+              <span class="material-symbols-rounded _fix_top_4">{HereResultTypeMap[item.resultType].icon}</span>
               {@html DOMPurify.sanitize(markByPositions(item.title, item.highlights?.title))}
             </svelte:fragment>
           </Autocomplete>
@@ -92,6 +94,11 @@
 
   .chosen-item {
     padding: 0.5rem 1rem 1rem 0;
+  }
+
+  ._fix_top_4 {
+    position: relative;
+    top: 4px;
   }
 
   @media screen and (min-width: 800px) {

@@ -2,8 +2,13 @@
 
   import type { HereLookupResponse } from '../here-api/here-lookup-response';
   import { HereResultTypeMap } from '../here-api/here-result-type.js';
+  import { chosenItemDetails } from '../store/app.store';
 
   export let data: HereLookupResponse | null = null;
+
+  function handleTitleClick() {
+    chosenItemDetails.next(data);
+  }
 
 </script>
 
@@ -12,10 +17,12 @@
   <div class="details">
     <div class="details-attr">
       <div class="details-attr-name">
-        {HereResultTypeMap[data.resultType].label}:
+        {HereResultTypeMap[data.resultType].label}
       </div>
       <div class="details-attr-value">
-        {data.title}
+        <a class="map-link" role="button" href="javascript:void 0" on:click={handleTitleClick}>
+          {data.title}
+        </a>
       </div>
     </div>
     {#if data.timeZone}

@@ -29,6 +29,16 @@ export default defineConfig({
         },
         secure: false,
       },
-    }
-  }
+      '/autosuggest.search.hereapi.com': {
+        target: 'https://autosuggest.search.hereapi.com',
+        rewrite: function(path) {
+          const token = path.includes('?') ? '&' : '?';
+          const rewrited = path.replace('/autosuggest.search.hereapi.com', '') + token + 'apiKey=' + hereSecret.apiKey;
+          console.log(`REWRITE: ${path} -> ${rewrited}`);
+          return rewrited;
+        },
+        secure: false,
+      },
+    },
+  },
 })

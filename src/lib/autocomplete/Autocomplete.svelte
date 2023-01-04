@@ -14,6 +14,7 @@
   export let value: string | null = null;
   export let bindItemText: string | (string | number)[] = [];
   export let bindItemKey: string | (string | number)[] = [];
+  export let placeholder: string = '';
 
   let inputRef: HTMLInputElement;
   let popperRef: HTMLElement;
@@ -140,7 +141,13 @@
 </script>
 
 <div class="app-autocomplete-ct">
-  <input type=text class="app-autocomplete-input" bind:value bind:this={inputRef}/>
+  <input
+    type=text
+    class="app-autocomplete-input"
+    bind:value
+    bind:this={inputRef}
+    placeholder={placeholder}
+  />
   <div
     class="app-autocomplete-popper"
     class:popper-visible={popperState === PopperState.VISIBLE}

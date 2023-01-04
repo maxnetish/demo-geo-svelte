@@ -91,12 +91,16 @@
       filter((details) => {
         return !!details;
       }),
-    ).subscribe((details) => {
-      const leafletBounds = new LatLngBounds(
-        [details.mapView.south, details.mapView.west],
-        [details.mapView.north, details.mapView.east],
-      );
-      mapInstance.flyToBounds(leafletBounds);
+    ).subscribe((details: HereLookupResponse) => {
+      if (details.mapView) {
+        const leafletBounds = new LatLngBounds(
+          [details.mapView.south, details.mapView.west],
+          [details.mapView.north, details.mapView.east],
+        );
+        mapInstance.flyToBounds(leafletBounds);
+      } else {
+        mapInstance.flyTo([details.position.lat, details.position.lng], 16);
+      }
     });
 
     // tracj chosen item to set marker (or remove)

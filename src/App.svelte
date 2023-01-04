@@ -6,7 +6,7 @@
     asideCollapsed,
     chosenItemDetails,
     geoSearchAutocompleteItems,
-    geoSearchQuery,
+    geoSearchAutocompleteQuery, geoSearchAutosuggestItems, geoSearchAutosuggestQuery,
   } from './lib/store/app.store.js';
   import Button from './lib/button/Button.svelte';
   import Autocomplete from './lib/autocomplete/Autocomplete.svelte';
@@ -40,14 +40,29 @@
       <div class="aside-content">
         <div class="section-search">
           <Autocomplete
-            bind:value="{$geoSearchQuery}"
+            bind:value="{$geoSearchAutocompleteQuery}"
             items="{$geoSearchAutocompleteItems || []}"
             bindItemText="title"
             bindItemKey="id"
             on:chooseItem={geoSearchAutocompleteChooseItem}
+            placeholder="Autocomplete address"
           >
             <svelte:fragment slot="itemTemplate" let:item={item}>
-              <span class="material-symbols-rounded _fix_top_4">{HereResultTypeMap[item.resultType].icon}</span>
+              <span class="material-symbols-rounded _fix_top_4">{HereResultTypeMap[item.resultType]?.icon}</span>
+              {@html DOMPurify.sanitize(markByPositions(item.title, item.highlights?.title))}
+            </svelte:fragment>
+          </Autocomplete>
+        </div>
+        <div class="section-search">
+          <Autocomplete
+            bind:value="{$geoSearchAutosuggestQuery}"
+            items="{$geoSearchAutosuggestItems || []}"
+            bindItemText="title"
+            bindItemKey="id"
+            on:chooseItem={geoSearchAutocompleteChooseItem}
+            placeholder="Autosuggest places"
+          >
+            <svelte:fragment slot="itemTemplate" let:item={item}>
               {@html DOMPurify.sanitize(markByPositions(item.title, item.highlights?.title))}
             </svelte:fragment>
           </Autocomplete>

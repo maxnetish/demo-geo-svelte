@@ -2,9 +2,24 @@ import { SvelteSubject } from '../utils/rx';
 import { debounceTime, distinctUntilChanged, filter, map, of, switchMap, take, withLatestFrom } from 'rxjs';
 import type { LatLng, LatLngBounds } from 'leaflet';
 import type { HereAutocompleteResponse } from '../here-api/here-autocomplete-response';
-import { hereAutocomplete, hereAutosuggest, hereLookup } from '../here-api/here-service';
+import { hereAutocomplete, hereAutosuggest, hereAutosuggestFollowUp, hereLookup } from '../here-api/here-service';
 import type { HereLookupResponse } from '../here-api/here-lookup-response';
 import type { HereAutosuggestResponse } from '../here-api/here-autosuggest-response';
+import { isEntityResult, isQueryResult } from '../here-api/here-autosuggest-response';
+
+function isAutosuggestResponse(value: HereAutosuggestResponse | HereLookupResponse): value is HereAutosuggestResponse {
+  if (value) {
+    return !!(value as any).items;
+  }
+  return false;
+}
+
+function isLookupResponse(value: HereAutosuggestResponse | HereLookupResponse): value is HereLookupResponse {
+  if (value) {
+    return !!(value as any).id;
+  }
+  return false;
+}
 
 export const asideCollapsed = new SvelteSubject(true);
 
@@ -50,7 +65,7 @@ geoSearchAutocompleteQuery.pipe(
 
 // Wire up changes in autosuggest search field
 geoSearchAutosuggestQuery.pipe(
-  debounceTime(1000),
+  debounceTime(250),
   distinctUntilChanged(),
   withLatestFrom(mapBounds),
   switchMap(([query, mapBounds]) => {
@@ -77,6 +92,8 @@ geoSearchAutosuggestQuery.pipe(
 
 export const chosenAutocompleteItem = new SvelteSubject<HereAutocompleteResponse['items'][number] | null>(null);
 
+export const chosenAutosuggestItem = new SvelteSubject<HereAutosuggestResponse['items'][number] | null>(null);
+
 export const chosenItemDetails = new SvelteSubject<HereLookupResponse | null>(null);
 
 chosenAutocompleteItem.pipe(
@@ -91,4 +108,27 @@ chosenAutocompleteItem.pipe(
   }),
 ).subscribe((details) => {
   chosenItemDetails.next(details);
+});
+
+
+chosenAutosuggestItem.pipe(
+  switchMap((autosuggestItemOrNull) => {
+    if (autosuggestItemOrNull) {
+      if (isQueryResult(autosuggestItemOrNull)) {
+        return hereAutosuggestFollowUp(autosuggestItemOrNull.href);
+      } else if (isEntityResult(autosuggestItemOrNull)) {
+        return hereLookup({
+          id: autosuggestItemOrNull.id,
+          show: ['tz', 'streetInfo', 'countryInfo'],
+        });
+      }
+    }
+    return of(null);
+  }),
+).subscribe((detailsOrChainResults) => {
+  if (isLookupResponse(detailsOrChainResults)) {
+    chosenItemDetails.next(detailsOrChainResults);
+  } else if (isAutosuggestResponse(detailsOrChainResults)) {
+    geoSearchAutosuggestItems.next(detailsOrChainResults.items);
+  }
 });

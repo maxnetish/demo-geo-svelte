@@ -10,6 +10,25 @@
     chosenItemDetails.next(data);
   }
 
+  function mapWeblinks(dataLocal: HereLookupResponse | null) {
+    const result: {label?: string, url: string}[] = [];
+    if(dataLocal && dataLocal.contacts && dataLocal.contacts.length) {
+      dataLocal.contacts.forEach((contact) => {
+        if(contact.www) {
+          contact.www.forEach((contactWww) => {
+            result.push({
+              label: contactWww.label,
+              url: contactWww.value,
+            });
+          });
+        }
+      });
+    }
+    return result;
+  }
+
+  $: weblinks = mapWeblinks(data);
+
 </script>
 
 
@@ -25,6 +44,35 @@
         </a>
       </div>
     </div>
+    {#if data.categories && data.categories.length}
+      <div class="details-attr">
+        <div class="details-attr-name">
+          Categories:
+        </div>
+        <div class="details-attr-value badges">
+          {#each data.categories as categ}
+            <span class="badge">{categ.name}</span>
+          {/each}
+        </div>
+      </div>
+    {/if}
+    {#if weblinks.length}
+      <div class="details-attr">
+        <div class="details-attr-name">
+          Links:
+        </div>
+        <div class="details-attr-value links">
+          {#each weblinks as weblink}
+            <div>
+              <a target="_blank" rel="noopener noreferrer" href={weblink.url}>
+                {weblink.label || weblink.url}
+                <span class="material-symbols-rounded link-icon">open_in_new</span>
+              </a>
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
     {#if data.timeZone}
       <div class="details-attr">
         <div class="details-attr-name">
@@ -50,6 +98,12 @@
 
 
 <style>
+  .details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   .details-attr {
     display: flex;
     gap: 0.5rem;
@@ -65,5 +119,31 @@
   }
 
   .details-attr-value {
+  }
+
+  .badges {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: smaller;
+    padding: 2px 4px;
+    background-color: var(--color-accent-bg);
+    border-radius: 4px;
+    color: var(--color-accent-text);
+  }
+
+  .links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .link-icon {
+    font-size: small;
+    position: relative;
+    top: 2px;
   }
 </style>

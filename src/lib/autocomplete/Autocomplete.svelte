@@ -197,12 +197,13 @@
     background-color: var(--color-dropdowm-bg);
     color: var(--color-text);
     transition: top 200ms ease, opacity 200ms ease;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 128px);
     max-width: calc(100vw - 32px);
     overflow: auto;
     border: var(--border-dropdown);
     border-radius: var(--border-dropdown-radius);
     box-shadow: 0 4px 8px 1px rgb(0 0 0 / 50%);
+    z-index: 100;
   }
 
   .app-autocomplete-popper.popper-hidden {
@@ -230,6 +231,10 @@
   }
   .app-autocomplete-dropdown_list_item:hover {
     background-color: var(--color-accent-bg);
+    color: var(--color-accent-text);
+  }
+
+  .app-autocomplete-dropdown_list_item:hover :global(*:not(mark)) {
     color: var(--color-accent-text);
   }
 

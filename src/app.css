@@ -38,3 +38,19 @@
     'opsz' 24
 }
 
+b {
+    font-weight: bold;
+}
+
+q {
+    quotes: unset;
+}
+
+q:before {
+    content: open-quote;
+}
+
+q:after {
+    content: close-quote;
+}
+

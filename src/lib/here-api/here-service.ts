@@ -93,3 +93,26 @@ export function hereLookup(request: HereLookupRequest) {
     },
   );
 }
+
+export function hereAutosuggestFollowUp(followUpUrl: string) {
+
+  const url = new URL(followUpUrl);
+  const realUrl = `/autosuggest.search.hereapi.com${url.pathname}${url.search}`;
+
+  return fromFetch<HereAutosuggestResponse>(
+    realUrl,
+    {
+      method: 'GET',
+      selector: (response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        return of({
+            items: [],
+            queryTerms: [],
+          } as HereAutosuggestResponse,
+        );
+      },
+    },
+  );
+}

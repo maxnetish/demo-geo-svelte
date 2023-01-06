@@ -11,10 +11,10 @@
   }
 
   function mapWeblinks(dataLocal: HereLookupResponse | null) {
-    const result: {label?: string, url: string}[] = [];
-    if(dataLocal && dataLocal.contacts && dataLocal.contacts.length) {
+    const result: { label?: string, url: string }[] = [];
+    if (dataLocal && dataLocal.contacts && dataLocal.contacts.length) {
       dataLocal.contacts.forEach((contact) => {
-        if(contact.www) {
+        if (contact.www) {
           contact.www.forEach((contactWww) => {
             result.push({
               label: contactWww.label,
@@ -27,7 +27,29 @@
     return result;
   }
 
+  function mapOpeningHours(dataLocal: HereLookupResponse | null) {
+    const result: string[] = [];
+    if (dataLocal && dataLocal.openingHours && dataLocal.openingHours[0] && dataLocal.openingHours[0].text && dataLocal.openingHours[0].text.length) {
+      return dataLocal.openingHours[0].text;
+    }
+    return result;
+  }
+
+  function mapFoodTypes(dataLocal: HereLookupResponse | null) {
+    const result: string[] = [];
+    if (dataLocal && dataLocal.foodTypes && dataLocal.foodTypes.length) {
+      return data.foodTypes
+        .map((foodType) => {
+          return foodType.name;
+        })
+        .filter(typeOrEmpty => !!typeOrEmpty);
+    }
+    return result;
+  }
+
   $: weblinks = mapWeblinks(data);
+  $: openingHoursView = mapOpeningHours(data);
+  $: foodTypesView = mapFoodTypes(data);
 
 </script>
 
@@ -44,6 +66,16 @@
         </a>
       </div>
     </div>
+    {#if data.address && data.address.label && data.address.label !== data.title}
+      <div class="details-attr">
+        <div class="details-attr-name">
+          Address:
+        </div>
+        <div class="details-attr-value">
+          {data.address.label}
+        </div>
+      </div>
+    {/if}
     {#if data.categories && data.categories.length}
       <div class="details-attr">
         <div class="details-attr-name">
@@ -52,6 +84,36 @@
         <div class="details-attr-value badges">
           {#each data.categories as categ}
             <span class="badge">{categ.name}</span>
+          {/each}
+        </div>
+      </div>
+    {/if}
+    {#if foodTypesView.length}
+      <div class="details-attr">
+        <div class="details-attr-name">
+          Food types:
+        </div>
+        <div class="details-attr-value badges">
+          {#each foodTypesView as foodType}
+            <div class="badge">
+              <span class="material-symbols-rounded attr-icon">restaurant</span>
+              {foodType}
+            </div>
+          {/each}
+        </div>
+      </div>
+    {/if}
+    {#if openingHoursView.length}
+      <div class="details-attr">
+        <div class="details-attr-name">
+          Opening hours:
+        </div>
+        <div class="details-attr-value opening-hours">
+          {#each openingHoursView as openingHoursItem}
+            <div>
+              <span class="material-symbols-rounded attr-icon attr-icon-grayed">schedule</span>
+              {openingHoursItem}
+            </div>
           {/each}
         </div>
       </div>
@@ -145,5 +207,21 @@
     font-size: small;
     position: relative;
     top: 2px;
+  }
+
+  .opening-hours {
+    display: flex;
+    gap: 4px 16px;
+    flex-wrap: wrap;
+  }
+
+  .attr-icon {
+    font-size: small;
+    position: relative;
+    top: 1px;
+  }
+
+  .attr-icon-grayed {
+    color: var(--color-text-secondary);
   }
 </style>

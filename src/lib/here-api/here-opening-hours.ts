@@ -2,7 +2,7 @@ import type { HereCategory } from './here-category';
 
 export interface HereOpeningHours {
   categories?: HereCategory[];
-  text: string;
+  text: string[];
   isOpen?: boolean;
   structured: {
     /**

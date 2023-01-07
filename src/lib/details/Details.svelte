@@ -199,7 +199,7 @@
 
   .links {
     display: flex;
-    gap: 16px;
+    gap: 4px 16px;
     flex-wrap: wrap;
   }
 
